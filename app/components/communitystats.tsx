@@ -3,10 +3,16 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 
-const AnimatedCounter = ({ end, suffix = "", duration = 2000 }) => {
+type AnimatedCounterProps = {
+  end: number;
+  suffix?: string;
+  duration?: number;
+};
+
+const AnimatedCounter = ({ end, suffix = "", duration = 2000 }: AnimatedCounterProps) => {
   const [count, setCount] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
-  const ref = useRef(null);
+  const ref = useRef<HTMLSpanElement | null>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -28,24 +34,25 @@ const AnimatedCounter = ({ end, suffix = "", duration = 2000 }) => {
   useEffect(() => {
     if (!isVisible) return;
 
-    let startTime;
-    const animate = (timestamp) => {
-      if (!startTime) startTime = timestamp;
+    let startTime: number | undefined;
+    const animate = (timestamp: number) => {
+      if (startTime === undefined) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
-      
+
       setCount(Math.floor(progress * end));
-      
+
       if (progress < 1) {
         requestAnimationFrame(animate);
       }
     };
-    
+
     requestAnimationFrame(animate);
   }, [isVisible, end, duration]);
 
   return (
     <span ref={ref}>
-      {count.toLocaleString()}{suffix}
+      {count.toLocaleString()}
+      {suffix}
     </span>
   );
 };
@@ -61,8 +68,7 @@ export default function CommunityStats() {
   const opacity = useTransform(scrollYProgress, [0, 1], [0.6, 1]);
 
   return (
-    <section className="relative w-full  text-white font-inter">
-      {/* Background matching previous sections */}
+    <section className="relative w-full text-white font-inter">
       <div
         ref={ref}
         className="relative z-10 max-w-7xl mx-auto px-6 lg:px-16 py-24"
@@ -92,7 +98,7 @@ export default function CommunityStats() {
             {/* Stat 1 */}
             <div className="space-y-4">
               <div className="text-5xl lg:text-6xl font-bold text-white">
-                <AnimatedCounter end={1} suffix="K+" />
+                <AnimatedCounter end={1000} suffix="+" />
               </div>
               <p className="text-white/90 text-lg font-medium">
                 Community members added every month
@@ -112,10 +118,10 @@ export default function CommunityStats() {
             {/* Stat 3 */}
             <div className="space-y-4">
               <div className="text-5xl lg:text-6xl font-bold text-white">
-                <AnimatedCounter end={1} suffix="K+" />
+                <AnimatedCounter end={1000} suffix="+" />
               </div>
               <p className="text-white/90 text-lg font-medium">
-                Challenges created by our community Per year
+                Challenges created by our community per year
               </p>
             </div>
           </div>
