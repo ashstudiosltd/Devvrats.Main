@@ -50,10 +50,12 @@ export default function LoginPage() {
 
             {/* Subtext */}
             <p className="mb-8 text-gray-300 text-sm">
-              We know how hard it is to be a developer. It doesn't have to be.
-              Personalized news feed, dev community and search, much better
-              than what's out there. Maybe ;)
-            </p>
+
+  We know how hard it is to be a developer. It doesn&apos;t have to be.
+  Personalized news feed, dev community and search, much better
+  than what&apos;s out there. Maybe ;)
+</p>
+
 
             {/* Login buttons */}
             <div className="space-y-3">
