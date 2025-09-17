@@ -6,7 +6,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const { scrollY } = useScroll();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,6 +22,7 @@ export default function Home() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -31,7 +32,13 @@ export default function Home() {
     canvas.height = height;
 
     const stars: { x: number; y: number; size: number; speed: number }[] = [];
-    const shootingStars: { x: number; y: number; len: number; speed: number; life: number }[] = [];
+    const shootingStars: {
+      x: number;
+      y: number;
+      len: number;
+      speed: number;
+      life: number;
+    }[] = [];
 
     // Create base stars
     for (let i = 0; i < 150; i++) {
@@ -44,6 +51,8 @@ export default function Home() {
     }
 
     function drawStars() {
+      if (!ctx) return; // ✅ safety check
+
       ctx.clearRect(0, 0, width, height);
 
       // Gradient background (Antarctica vibes ❄️)
@@ -138,7 +147,7 @@ export default function Home() {
             className="border border-white/30 rounded-full px-5 py-2 text-sm 
               hover:bg-white/20 transition backdrop-blur-sm"
           >
-            Join Sabha-Free Forever 
+            Join Sabha-Free Forever
           </a>
         </div>
       </header>
