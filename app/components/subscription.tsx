@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 // Types
 interface Feature {
@@ -90,24 +90,8 @@ const formatPrice = (price: number, currency: 'INR' | 'USD'): string => {
   return `${symbol}${price}`;
 };
 
-const mapCountryToCurrency = (countryCode: string): 'INR' | 'USD' => {
-  return countryCode === 'IN' ? 'INR' : 'USD';
-};
-
 const DojoSubscriptionCards: React.FC = () => {
   const [selectedCountry, setSelectedCountry] = useState<Country>(countries[0]);
-  const [selectedTier, setSelectedTier] = useState<string | null>(null);
-  const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
-
-  const toggleExpanded = (tierId: string) => {
-    const newExpanded = new Set(expandedCards);
-    if (newExpanded.has(tierId)) {
-      newExpanded.delete(tierId);
-    } else {
-      newExpanded.add(tierId);
-    }
-    setExpandedCards(newExpanded);
-  };
 
   const handleCountryChange = (countryCode: string) => {
     const country = countries.find(c => c.code === countryCode);
@@ -116,10 +100,6 @@ const DojoSubscriptionCards: React.FC = () => {
 
   const getPrice = (tier: Tier): number => {
     return selectedCountry.currency === 'INR' ? tier.priceINR : tier.priceUSD;
-  };
-
-  const handleTierSelect = (tierId: string) => {
-    setSelectedTier(tierId);
   };
 
   return (
@@ -152,84 +132,73 @@ const DojoSubscriptionCards: React.FC = () => {
 
       {/* Subscription cards grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-        {tiers.map((tier, index) => {
-          const isExpanded = expandedCards.has(tier.id);
-
-          return (
-            <motion.div
-              key={tier.id}
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-              whileHover={{ scale: 1.02, y: -5 }}
-              className={`relative rounded-2xl shadow-lg border-2 ${tier.accentColor} overflow-hidden ${
-                tier.popular ? 'ring-2 ring-blue-500 ring-opacity-50' : ''
-              }`}
-            >
-              {/* Popular badge */}
-              {tier.badge && (
-                <div className="absolute top-4 right-4 bg-blue-500 text-white text-xs px-3 py-1 rounded-full font-medium">
-                  {tier.badge}
-                </div>
-              )}
-
-              <div className="p-6">
-                {/* Tier name */}
-                <h3 className="text-2xl font-bold text-white mb-2">{tier.name}</h3>
-
-                {/* Price */}
-                <motion.div
-                  key={`${tier.id}-${selectedCountry.currency}`}
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className="mb-4"
-                >
-                  <div className="text-4xl font-bold text-white mb-1">
-                    {formatPrice(getPrice(tier), selectedCountry.currency)}
-                  </div>
-                  {tier.priceINR > 0 && (
-                    <div className="text-sm text-white">
-                      Billed monthly. Taxes may apply.
-                    </div>
-                  )}
-                </motion.div>
-
-                {/* Features with smooth expand */}
-                <motion.div
-                  animate={{ height: isExpanded ? "auto" : 140, opacity: 1 }}
-                  initial={false}
-                  transition={{ duration: 0.4, ease: "easeInOut" }}
-                  className="overflow-hidden space-y-3 mb-4"
-                >
-                  {tier.features.map((feature, featureIndex) => (
-                    <div key={featureIndex} className="flex items-start gap-3">
-                      <span className="text-lg flex-shrink-0">{feature.icon}</span>
-                      <span className="text-sm text-white">{feature.text}</span>
-                    </div>
-                  ))}
-                </motion.div>
-
-
-                {/* CTA button */}
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleTierSelect(tier.id)}
-                  className={`w-full py-3 px-6 rounded-lg font-medium transition-all duration-200 ${
-                    tier.id === 'white'
-                      ? 'bg-gray-600 hover:bg-gray-700 text-white'
-                      : tier.popular
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl'
-                      : 'bg-gray-900 hover:bg-gray-800 text-white'
-                  }`}
-                >
-                  {tier.id === 'white' ? 'Register' : 'Register'}
-                </motion.button>
+        {tiers.map((tier, index) => (
+          <motion.div
+            key={tier.id}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1, duration: 0.5 }}
+            whileHover={{ scale: 1.02, y: -5 }}
+            className={`relative rounded-2xl shadow-lg border-2 ${tier.accentColor} overflow-hidden ${
+              tier.popular ? 'ring-2 ring-blue-500 ring-opacity-50' : ''
+            }`}
+          >
+            {/* Popular badge */}
+            {tier.badge && (
+              <div className="absolute top-4 right-4 bg-blue-500 text-white text-xs px-3 py-1 rounded-full font-medium">
+                {tier.badge}
               </div>
-            </motion.div>
-          );
-        })}
+            )}
+
+            <div className="p-6">
+              {/* Tier name */}
+              <h3 className="text-2xl font-bold text-white mb-2">{tier.name}</h3>
+
+              {/* Price */}
+              <motion.div
+                key={`${tier.id}-${selectedCountry.currency}`}
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className="mb-4"
+              >
+                <div className="text-4xl font-bold text-white mb-1">
+                  {formatPrice(getPrice(tier), selectedCountry.currency)}
+                </div>
+                {tier.priceINR > 0 && (
+                  <div className="text-sm text-white">
+                    Billed monthly. Taxes may apply.
+                  </div>
+                )}
+              </motion.div>
+
+              {/* Features */}
+              <div className="space-y-3 mb-4">
+                {tier.features.map((feature, featureIndex) => (
+                  <div key={featureIndex} className="flex items-start gap-3">
+                    <span className="text-lg flex-shrink-0">{feature.icon}</span>
+                    <span className="text-sm text-white">{feature.text}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* CTA button */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`w-full py-3 px-6 rounded-lg font-medium transition-all duration-200 ${
+                  tier.id === 'white'
+                    ? 'bg-gray-600 hover:bg-gray-700 text-white'
+                    : tier.popular
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl'
+                    : 'bg-gray-900 hover:bg-gray-800 text-white'
+                }`}
+              >
+                {tier.id === 'white' ? 'Register' : 'Register'}
+              </motion.button>
+            </div>
+          </motion.div>
+        ))}
       </div>
     </div>
   );
