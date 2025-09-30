@@ -48,10 +48,12 @@ export default function Fundamentals() {
                 favorite language or pick from 5+ others.
               </p>
               <div className="flex flex-wrap gap-4">
-                <button className="bg-transparent border-2 border-white/30 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl text-sm sm:text-base text-white 
+                <a href="/Train">
+                  <button className="bg-transparent border-2 border-white/30 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl text-sm sm:text-base text-white 
                                  hover:bg-white/10 hover:border-white/50 transition-all duration-300 font-medium">
-                  Join the Kutir
-                </button>
+                    Join the Kutir
+                  </button>
+                </a>
               </div>
             </div>
 

@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+"use client";
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import Link from "next/link";
 
 // Types
 interface Feature {
@@ -21,72 +23,72 @@ interface Tier {
 interface Country {
   code: string;
   name: string;
-  currency: 'INR' | 'USD';
+  currency: "INR" | "USD";
 }
 
 // Sample data
 const tiers: Tier[] = [
   {
-    id: 'white',
-    name: 'White Belt',
+    id: "white",
+    name: "White Belt",
     priceINR: 0,
     priceUSD: 0,
     features: [
-      { icon: '🥋', text: 'Limited daily challenges (1-2/day)' },
-      { icon: '💡', text: 'Basic feedback (rule-based hints)' },
-      { icon: '🚫', text: 'No AI coaching' }
+      { icon: "🥋", text: "Limited daily challenges (1-2/day)" },
+      { icon: "💡", text: "Basic feedback (rule-based hints)" },
+      { icon: "🚫", text: "No AI coaching" },
     ],
-    accentColor: 'border-gray-300'
+    accentColor: "border-gray-300",
   },
   {
-    id: 'blue',
-    name: 'Blue Belt',
+    id: "blue",
+    name: "Blue Belt",
     priceINR: 299,
     priceUSD: 5,
     features: [
-      { icon: '🏠', text: 'Access to 1 Dojo/Day' },
-      { icon: '⚡', text: 'Unlimited daily challenges' },
-      { icon: '📈', text: 'Beginner + intermediate levels' }
+      { icon: "🏠", text: "Access to 1 Dojo/Day" },
+      { icon: "⚡", text: "Unlimited daily challenges" },
+      { icon: "📈", text: "Beginner + intermediate levels" },
     ],
-    accentColor: 'border-blue-500'
+    accentColor: "border-blue-500",
   },
   {
-    id: 'black',
-    name: 'Black Belt',
+    id: "black",
+    name: "Black Belt",
     priceINR: 699,
     priceUSD: 15,
     features: [
-      { icon: '✅', text: 'Everything in Blue Belt' },
-      { icon: '🎓', text: 'Advanced & expert challenges' },
-      { icon: '🗺️', text: 'Full Dojo training path (personalized roadmaps)' },
+      { icon: "✅", text: "Everything in Blue Belt" },
+      { icon: "🎓", text: "Advanced & expert challenges" },
+      { icon: "🗺️", text: "Full Dojo training path (personalized roadmaps)" },
     ],
-    badge: 'Most Popular',
-    accentColor: 'border-black',
-    popular: true
+    badge: "Most Popular",
+    accentColor: "border-black",
+    popular: true,
   },
   {
-    id: 'sensei',
-    name: 'Sensei Circle',
+    id: "sensei",
+    name: "Sensei Circle",
     priceINR: 1199,
     priceUSD: 25,
     features: [
-      { icon: '✅', text: 'Everything in Black Belt' },
-      { icon: '👥', text: '1:1 mentorship sessions' },
-      { icon: '🔒', text: 'Access to private dojo challenges' },
+      { icon: "✅", text: "Everything in Black Belt" },
+      { icon: "👥", text: "1:1 mentorship sessions" },
+      { icon: "🔒", text: "Access to private dojo challenges" },
     ],
-    accentColor: 'border-purple-500'
-  }
+    accentColor: "border-purple-500",
+  },
 ];
 
 const countries: Country[] = [
-  { code: 'IN', name: 'India', currency: 'INR' },
-  { code: 'US', name: 'Others', currency: 'USD' },
+  { code: "IN", name: "India", currency: "INR" },
+  { code: "US", name: "Others", currency: "USD" },
 ];
 
 // Helper functions
-const formatPrice = (price: number, currency: 'INR' | 'USD'): string => {
-  if (price === 0) return 'Free';
-  const symbol = currency === 'INR' ? '₹' : '$';
+const formatPrice = (price: number, currency: "INR" | "USD"): string => {
+  if (price === 0) return "Free";
+  const symbol = currency === "INR" ? "₹" : "$";
   return `${symbol}${price}`;
 };
 
@@ -94,12 +96,12 @@ const DojoSubscriptionCards: React.FC = () => {
   const [selectedCountry, setSelectedCountry] = useState<Country>(countries[0]);
 
   const handleCountryChange = (countryCode: string) => {
-    const country = countries.find(c => c.code === countryCode);
+    const country = countries.find((c) => c.code === countryCode);
     if (country) setSelectedCountry(country);
   };
 
   const getPrice = (tier: Tier): number => {
-    return selectedCountry.currency === 'INR' ? tier.priceINR : tier.priceUSD;
+    return selectedCountry.currency === "INR" ? tier.priceINR : tier.priceUSD;
   };
 
   return (
@@ -108,11 +110,16 @@ const DojoSubscriptionCards: React.FC = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12">
         <div>
           <h1 className="text-4xl font-bold text-white mb-2">Choose Your Dojo Path</h1>
-          <p className="text-lg text-gray-400">Level up your coding skills with our martial arts-inspired training</p>
+          <p className="text-lg text-gray-400">
+            Level up your coding skills with our martial arts-inspired training
+          </p>
         </div>
-        
+
         <div className="mt-4 sm:mt-0">
-          <label htmlFor="country-select" className="block text-sm font-medium text-gray-300 mb-1">
+          <label
+            htmlFor="country-select"
+            className="block text-sm font-medium text-gray-300 mb-1"
+          >
             Country
           </label>
           <select
@@ -121,7 +128,7 @@ const DojoSubscriptionCards: React.FC = () => {
             onChange={(e) => handleCountryChange(e.target.value)}
             className="px-4 py-2 border border-gray-600 bg-transparent text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
           >
-            {countries.map(country => (
+            {countries.map((country) => (
               <option key={country.code} value={country.code}>
                 {country.name}
               </option>
@@ -140,7 +147,7 @@ const DojoSubscriptionCards: React.FC = () => {
             transition={{ delay: index * 0.1, duration: 0.5 }}
             whileHover={{ scale: 1.02, y: -5 }}
             className={`relative rounded-2xl shadow-lg border-2 ${tier.accentColor} overflow-hidden ${
-              tier.popular ? 'ring-2 ring-blue-500 ring-opacity-50' : ''
+              tier.popular ? "ring-2 ring-blue-500 ring-opacity-50" : ""
             }`}
           >
             {/* Popular badge */}
@@ -182,20 +189,22 @@ const DojoSubscriptionCards: React.FC = () => {
                 ))}
               </div>
 
-              {/* CTA button */}
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`w-full py-3 px-6 rounded-lg font-medium transition-all duration-200 ${
-                  tier.id === 'white'
-                    ? 'bg-gray-600 hover:bg-gray-700 text-white'
-                    : tier.popular
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl'
-                    : 'bg-gray-900 hover:bg-gray-800 text-white'
-                }`}
-              >
-                {tier.id === 'white' ? 'Register' : 'Register'}
-              </motion.button>
+              {/* CTA button with link */}
+              <Link href={`/registration?tier=${tier.id}`}>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`w-full py-3 px-6 rounded-lg font-medium transition-all duration-200 ${
+                    tier.id === "white"
+                      ? "bg-gray-600 hover:bg-gray-700 text-white"
+                      : tier.popular
+                      ? "bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl"
+                      : "bg-gray-900 hover:bg-gray-800 text-white"
+                  }`}
+                >
+                  Register
+                </motion.button>
+              </Link>
             </div>
           </motion.div>
         ))}
