@@ -40,7 +40,6 @@ export default function Home() {
       life: number;
     }[] = [];
 
-    // Create base stars
     for (let i = 0; i < 150; i++) {
       stars.push({
         x: Math.random() * width,
@@ -51,18 +50,16 @@ export default function Home() {
     }
 
     function drawStars() {
-      if (!ctx) return; // ✅ safety check
+      if (!ctx) return;
 
       ctx.clearRect(0, 0, width, height);
 
-      // Gradient background (Antarctica vibes ❄️)
       const gradient = ctx.createLinearGradient(0, 0, 0, height);
       gradient.addColorStop(0, "#0a0c2c");
       gradient.addColorStop(1, "#09131a");
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, width, height);
 
-      // Static stars
       ctx.fillStyle = "white";
       stars.forEach((star) => {
         ctx.beginPath();
@@ -75,7 +72,6 @@ export default function Home() {
         }
       });
 
-      // Shooting stars
       shootingStars.forEach((s, i) => {
         ctx.strokeStyle = "rgba(255,255,255,0.8)";
         ctx.lineWidth = 2;
@@ -91,7 +87,6 @@ export default function Home() {
         if (s.life <= 0) shootingStars.splice(i, 1);
       });
 
-      // Random shooting star
       if (Math.random() < 0.005) {
         shootingStars.push({
           x: Math.random() * width,
@@ -120,6 +115,7 @@ export default function Home() {
 
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-between text-white overflow-hidden font-inter">
+      
       {/* 🌌 Starfield Background */}
       <canvas
         ref={canvasRef}
@@ -133,13 +129,16 @@ export default function Home() {
           max-w-6xl mt-4 rounded-2xl shadow-lg transition-all duration-500
           ${
             scrolled
-              ? " backdrop-blur-lg border border-white/10"
+              ? "backdrop-blur-lg border border-white/10"
               : "bg-transparent border-transparent"
           }`}
         >
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-lg tracking-wide">DEVVRATS.</span>
+            <span className="font-semibold text-lg tracking-wide">
+              DEVVRATS.
+            </span>
           </div>
+
           <a
             href="https://t.me/+EiuR--gamdYjQ9"
             target="_blank"
@@ -159,12 +158,14 @@ export default function Home() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
-        <h1 className="text-4xl lg:text-6xl  leading-tight">
+        <h1 className="text-4xl lg:text-6xl leading-tight">
           <span className="block">Learning,Creating</span>
+
           <span className="block bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent font-bold">
             thriving together.
           </span>
         </h1>
+
         <p className="text-lg text-gray-300 max-w-3xl">
           Community of learners and creators, united by curiosity and collaboration.
           Ideas turn into action, skills transform into innovation, and together we
@@ -187,11 +188,12 @@ export default function Home() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1 }}
       >
+
         {/* Landscape Video */}
         <div className="hidden sm:block relative w-full max-w-4xl aspect-video rounded-xl overflow-hidden shadow-2xl border border-gray-800">
           <iframe
             className="w-full h-full"
-            src="https://www.youtube.com/embed/RMpbzYjDIas"
+            src="https://www.youtube.com/embed/vkdKxUrNKtU"
             title="YouTube video landscape"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -203,14 +205,16 @@ export default function Home() {
         <div className="block sm:hidden relative w-full max-w-xs aspect-[9/16] rounded-xl overflow-hidden shadow-2xl border border-gray-800">
           <iframe
             className="w-full h-full"
-            src="https://www.youtube.com/embed/yourPortraitVideoID"
+            src="https://www.youtube.com/embed/vkdKxUrNKtU"
             title="YouTube video portrait"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           ></iframe>
         </div>
+
       </motion.div>
+
     </section>
   );
 }
