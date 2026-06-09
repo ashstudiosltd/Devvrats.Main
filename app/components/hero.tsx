@@ -173,9 +173,11 @@ export default function Home() {
         </p>
 
         <a
-          href="/sabha"
-          className="mt-2 text-sm underline text-gray-400 hover:text-gray-200"
-        >
+  href="https://devvrats-blog.vercel.app/"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="mt-2 text-sm underline text-gray-400 hover:text-gray-200"
+>
           Read our Blogs
         </a>
       </motion.div>
