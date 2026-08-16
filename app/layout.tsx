@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Devvrats",
-  description: "Devvrats.",
+  description: "Devvrats is indian's own developer community,bringing developers together to learn,build,collaborate, and grow."
 };
 
 export default function RootLayout({
