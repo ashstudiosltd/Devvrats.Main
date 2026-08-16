@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Devvrats",
-  description: "Static gradient background",
+  description: "Devvrats.",
 };
 
 export default function RootLayout({
