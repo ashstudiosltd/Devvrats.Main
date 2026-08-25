@@ -35,7 +35,8 @@ export default function LoginPage() {
                 height={40}
                 className="object-contain"
               />
-              <span className="text-xl font-bold">devvrats.</span>
+              <span className="text-xl font-bold">Devvrats.
+              </span>
             </div>
 
             {/* Heading */}
