@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import Orb from "./orb"
 
 export default function Fundamentals() {
   const ref = useRef<HTMLDivElement>(null);
@@ -51,7 +52,7 @@ export default function Fundamentals() {
                 <a href="/Train">
                   <button className="bg-transparent border-2 border-white/30 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl text-sm sm:text-base text-white 
                                  hover:bg-white/10 hover:border-white/50 transition-all duration-300 font-medium">
-                    Join the Kutir
+                    Try Pata
                   </button>
                 </a>
               </div>
@@ -87,9 +88,6 @@ export default function Fundamentals() {
                 <div className="flex space-x-2 mb-4">
                   <button className="px-3 py-1.5 bg-blue-600 text-white text-xs rounded-md font-medium">
                     TRAIN
-                  </button>
-                  <button className="px-3 py-1.5 bg-gray-600 text-white text-xs rounded-md">
-                    SKIP
                   </button>
                 </div>
 
@@ -134,15 +132,10 @@ export default function Fundamentals() {
             className="bg-gray-800/30 backdrop-blur-xl rounded-2xl border border-gray-700/50 p-6 sm:p-8 shadow-xl min-h-[400px]"
           >
             <div className="mb-6">
-              <motion.div
-                className="w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full mb-4"
-                animate={{ scale: [1, 1.4, 1] }}
-                transition={{
-                  repeat: Infinity,
-                  duration: 1.5,
-                  ease: "easeInOut",
-                }}
-              />
+              {/* Orb replaces the old pulsing dot — same footprint (w-3 h-3 / sm:w-4 sm:h-4) */}
+              <div className="w-3 h-3 sm:w-4 sm:h-4 mb-4">
+                <Orb hue={0} hoverIntensity={0.2} rotateOnHover={true} />
+              </div>
               <h3 className="text-2xl font-bold text-white mb-4">Anu</h3>
               <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
                 Meet Anu - your personal assistant and the backbone of
