@@ -15,7 +15,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className="relative text-white">
         {/* Gradient background only */}
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-gray-950 via-gray-900 to-purple-950 opacity-90" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black via-gray-900 to-purple-950 opacity-90" />
         
         {/* Page content */}
         <main className="relative z-10 min-h-screen">
