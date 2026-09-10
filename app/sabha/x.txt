@@ -1,0 +1,10 @@
+sabha/
+    page.tsx
+    feed.tsx
+    post-card.tsx
+    featured.tsx
+    topics.tsx
+    search.tsx
+    filters.tsx
+    composer.tsx      // future "Create Post"
+    comments.tsx      // future

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+// The stylesheet is processed by Next.js at build time and has no TypeScript module declaration.
+// @ts-expect-error -- side-effect CSS imports are handled by Next.js
 import "./globals.css";
 
 export const metadata: Metadata = {

@@ -84,17 +84,8 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-between overflow-hidden font-inter bg-gradient-to-b from-[#FFF6E9] via-[#FFE7D2] to-[#FDEEE0]">
+    <section className="relative min-h-screen flex flex-col items-center justify-between overflow-hidden font-inter">
       <Navbar />
-
-      {/* Soft sunrise glow near the horizon */}
-      <div
-        className="pointer-events-none absolute left-1/2 top-[55%] -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[900px] max-h-[900px] rounded-full blur-3xl opacity-60 z-0"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(255,214,138,0.9) 0%, rgba(255,155,113,0.35) 45%, rgba(255,155,113,0) 75%)",
-        }}
-      />
 
       {/* Rising light motes */}
       <canvas
@@ -109,7 +100,7 @@ export default function Hero() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
-        <h1 className="text-3xl sm:text-4xl lg:text-6xl leading-tight text-neutral-900">
+        <h1 className="text-3xl sm:text-4xl lg:text-6xl leading-tight text-white">
           <span className="block">Learning,Creating</span>
 
           <span className="block bg-gradient-to-r from-amber-500 via-orange-500 to-pink-500 bg-clip-text text-transparent font-bold">
@@ -117,7 +108,7 @@ export default function Hero() {
           </span>
         </h1>
 
-        <p className="text-base sm:text-lg text-neutral-700 max-w-3xl">
+        <p className="text-base sm:text-lg text-neutral-200 max-w-3xl">
           Community of learners and creators, united by curiosity and
           collaboration. Ideas turn into action, skills transform into
           innovation, and together we shape the future of technology and
@@ -125,10 +116,10 @@ export default function Hero() {
         </p>
 
         <a
-          href="https://devvrats-blog.vercel.app/"
+          href="/sabha"
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-2 text-sm underline text-neutral-600 hover:text-neutral-900"
+          className="mt-2 text-sm underline text-neutral-300 hover:text-white"
         >
           Read our Blogs
         </a>

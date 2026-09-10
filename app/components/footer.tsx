@@ -41,9 +41,9 @@ export default function Footer() {
         {/* Middle section: Site map */}
         <div className="flex flex-col gap-3">
           <h3 className="font-semibold text-lg">Site Map</h3>
-          <a href="#Home" className="hover:text-gray-300 transition text-white">Home</a>
-          <a href="#fundamentals" className="hover:text-gray-300 transition text-white">Our Fundamentals</a>
-          <a href="#subscription" className="hover:text-gray-300 transition text-white">Be a Member</a>
+          <a href="/hero" className="hover:text-gray-300 transition text-white">Home</a>
+          <a href="/fundamentals" className="hover:text-gray-300 transition text-white">Our Fundamentals</a>
+          <a href="/subscription" className="hover:text-gray-300 transition text-white">Be a Member</a>
         </div>
 
         {/* Right section: Actions */}
@@ -52,13 +52,12 @@ export default function Footer() {
           <a href="/registration"><button className="text-black px-2 hover:text-gray-300 transition text-white">
             Login
           </button></a>
-          <a href=""><button className="hover:text-gray-300 transition text-white px-2  ">
+          <a href="/sabha" target="_blank" ><button className="hover:text-gray-300 transition text-white px-2  ">
             Sabha
           </button></a>
         </div>
 
       </div>
-
       <div className="text-gray-500 text-sm mt-8 text-center">
         © 2022 Ashstudios. All Rights Reserved.
       </div>
