@@ -116,7 +116,7 @@ export default function Hero() {
         </p>
 
         <a
-          href="/sabha"
+          href="sabha.devvrats.in"
           target="_blank"
           rel="noopener noreferrer"
           className="mt-2 text-sm underline text-neutral-300 hover:text-white"
