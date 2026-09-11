@@ -52,7 +52,7 @@ export default function Footer() {
           <a href="/registration"><button className="text-black px-2 hover:text-gray-300 transition text-white">
             Login
           </button></a>
-          <a href="/sabha" target="_blank" ><button className="hover:text-gray-300 transition text-white px-2  ">
+          <a href="/blogs" target="_blank" ><button className="hover:text-gray-300 transition text-white px-2  ">
             Sabha
           </button></a>
         </div>
