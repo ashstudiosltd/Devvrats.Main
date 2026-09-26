@@ -11,10 +11,10 @@ export default function Footer() {
         {/* Left section: Logo + Description */}
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-xl font-semibold">DEVVRATS.</span>
+            <span className="text-xl font-semibold">Devvrats.</span>
           </div>
           <p className="text-gray-300 max-w-sm">
-            Devvrats — Your ultimate learning and community platform for developers.
+          Your ultimate learning and community platform for developers.
           </p>
           <div className="flex gap-3 mt-2">
             <a href="#" className="hover:text-gray-300 transition ">
@@ -58,8 +58,8 @@ export default function Footer() {
         </div>
 
       </div>
-      <div className="text-gray-500 text-sm mt-8 text-center">
-        © 2022 Ashstudios. All Rights Reserved.
+      <div className="text-white text-sm mt-8 text-center">
+        2026 Devvrats. All Rights Reserved.
       </div>
     </footer>
   );

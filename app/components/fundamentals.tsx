@@ -2,7 +2,6 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import Orb from "./orb"
 
 export default function Fundamentals() {
   const ref = useRef<HTMLDivElement>(null);
@@ -15,7 +14,7 @@ export default function Fundamentals() {
   const opacity = useTransform(scrollYProgress, [0, 1], [0.6, 1]);
 
   return (
-    <section className="relative w-full text-white font-inter">
+    <section className="relative w-full text-white ">
       {/* Background stars */}
       <div className="absolute inset-0 bg-[url('/stars.png')] bg-cover bg-center opacity-20" />
 
@@ -102,7 +101,7 @@ export default function Fundamentals() {
                       </span>
                     </div>
                   </div>
-                  <div className="font-mono text-xs sm:text-sm text-gray-300 space-y-1">
+                  <div className=" text-xs sm:text-sm text-gray-300 space-y-1">
                     <div className="flex items-center space-x-2">
                       <span className="text-yellow-400">world</span>
                       <span className="text-gray-500">→</span>
@@ -132,10 +131,7 @@ export default function Fundamentals() {
             className="bg-gray-800/30 backdrop-blur-xl rounded-2xl border border-gray-700/50 p-6 sm:p-8 shadow-xl min-h-[400px]"
           >
             <div className="mb-6">
-              {/* Orb replaces the old pulsing dot — same footprint (w-3 h-3 / sm:w-4 sm:h-4) */}
-              <div className="w-3 h-3 sm:w-4 sm:h-4 mb-4">
-                <Orb hue={0} hoverIntensity={0.2} rotateOnHover={true} />
-              </div>
+
               <h3 className="text-2xl font-bold text-white mb-4">Anu</h3>
               <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
                 Meet Anu - your personal assistant and the backbone of
@@ -145,7 +141,7 @@ export default function Fundamentals() {
             </div>
 
             {/* Test Results Panel */}
-            <div className="bg-gray-900/80 rounded-lg border border-gray-700 p-3 sm:p-4 font-mono text-xs sm:text-sm">
+            <div className="bg-gray-900/80 rounded-lg border border-gray-700 p-3 sm:p-4  text-xs sm:text-sm">
               <div className="text-gray-400 mb-3 flex flex-wrap items-center gap-2">
                 <span className="text-blue-400">Time:</span>
                 <span>842ms</span>

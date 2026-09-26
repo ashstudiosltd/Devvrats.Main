@@ -27,3 +27,28 @@ body {
 html {
   scroll-behavior: smooth;
 }
+@keyframes code-fade {
+  0% { opacity: 0; }
+  15% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.animate-code-fade {
+  animation-name: code-fade;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: both;
+}
+
+@keyframes arrow-idle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(3px); }
+}
+.animate-arrow-idle {
+  animation: arrow-idle 3.2s ease-in-out infinite;
+  animation-delay: 1.6s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-code-fade { animation: none !important; opacity: 0.08 !important; }
+  .animate-arrow-idle { animation: none; }
+}

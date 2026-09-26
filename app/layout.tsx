@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
+import { Roboto } from "next/font/google";
 import "./globals.css";
 
+const roboto = Roboto({
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "Devvrats",
+  title: "Devvrats.",
   description: "Devvrats is indian's own developer community,bringing developers together to learn,build,collaborate, and grow."
 };
 
@@ -13,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className="relative text-white">
+      <body className={`${roboto.className} relative text-white`}>
         {/* Gradient background only */}
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black via-gray-900 to-purple-950 opacity-90" />
         

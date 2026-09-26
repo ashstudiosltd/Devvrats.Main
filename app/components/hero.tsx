@@ -1,214 +1,181 @@
 "use client";
 
+/**
+ * DevvratsHero
+ * -------------------------------------------------------------------------
+ * - No autoplay. The transparent, square (1:1) logo video is scrubbed
+ *   frame-by-frame by scroll position using a single GSAP ScrollTrigger.
+ * - On top of the currentTime scrub, the SAME scroll progress also drives
+ *   one deliberate, orchestrated visual reaction on the video itself:
+ *   it rises slightly, grows from 94% -> 100% scale (anchored to the
+ *   bottom, so it reads as "settling in" rather than just zooming), and
+ *   fades from 82% -> 100% opacity. This is intentionally a single
+ *   cohesive effect, not several scattered ones, per the "one orchestrated
+ *   moment" principle — it should read as "the whole thing reacts to my
+ *   scroll," not as a pile of independent animations.
+ * - Everything is written directly to the DOM in one onUpdate callback
+ *   (no per-frame tween creation, no React state), so it stays cheap.
+ */
+
 import { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import dynamic from "next/dynamic";
-import Navbar from "./navbar";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-const Orb = dynamic(() => import("./orb"), {
-  ssr: false,
-});
+// ---------------------------------------------------------------------------
+// SIZE TUNABLE — how much of the screen's bottom the video covers, at any
+// screen size. Values are % of viewport height, so "50" always means "half
+// the screen," regardless of device width.
+// ---------------------------------------------------------------------------
+const MASK_HEIGHT_CLASSES = [
+  "h-[50vh]", // base (phones, <640px)
+  "sm:h-[48vh]",
+  "md:h-[55vh]",
+  "lg:h-[60vh]",
+  "xl:h-[62vh]",
+  "min-h-[260px]",
+].join(" ");
 
-export default function Hero() {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+/** Distance (px) the page must scroll for the video to go from frame 0 to
+ *  its final frame, and for the rise/scale/fade reaction to complete. */
+const SCROLL_DISTANCE = 1400;
 
-  // ☀️ Soft rising light-mote effect (sunrise theme)
+// Scroll-reaction range — tune the "how much" here, not inline below.
+const REACTION = {
+  scaleFrom: 0.94,
+  scaleTo: 1,
+  riseFromPct: 5, // % of the video's own height it starts pushed down by
+  opacityFrom: 0.82,
+  opacityTo: 1,
+};
+
+gsap.registerPlugin(ScrollTrigger);
+
+export default function DevvratsHero() {
+  const heroRef = useRef<HTMLElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const hero = heroRef.current;
+    const video = videoRef.current;
+    if (!hero || !video) return;
 
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
 
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
+    // Settle immediately into the resting visual state so there's never a
+    // flash of the "start" pose before JS/scroll kicks in.
+    video.style.transform = prefersReducedMotion
+      ? "translateY(0%) scale(1)"
+      : `translateY(${REACTION.riseFromPct}%) scale(${REACTION.scaleFrom})`;
+    video.style.opacity = prefersReducedMotion
+      ? "1"
+      : `${REACTION.opacityFrom}`;
 
-    const motes: {
-      x: number;
-      y: number;
-      size: number;
-      speed: number;
-      alpha: number;
-    }[] = [];
+    let scrollTrigger: ScrollTrigger | undefined;
+    let cancelled = false;
 
-    for (let i = 0; i < 60; i++) {
-      motes.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        size: Math.random() * 2.5 + 0.5,
-        speed: Math.random() * 0.4 + 0.15,
-        alpha: Math.random() * 0.5 + 0.2,
+    const createScrollTrigger = () => {
+      if (cancelled || scrollTrigger) return; // guard: never create twice
+      if (!video.duration || Number.isNaN(video.duration)) return;
+
+      video.currentTime = 0; // deterministic starting frame
+
+      if (prefersReducedMotion) return; // respect the OS preference, stay static
+
+      scrollTrigger = ScrollTrigger.create({
+        trigger: hero,
+        start: "top top",
+        end: `+=${SCROLL_DISTANCE}`,
+        scrub: 0.4,
+        pin: false,
+        onUpdate: (self) => {
+          const progress = self.progress;
+
+          // Direct currentTime write — no React state, no re-render.
+          video.currentTime = progress * video.duration;
+
+          // The one orchestrated scroll reaction, same progress value.
+          const scale =
+            REACTION.scaleFrom +
+            progress * (REACTION.scaleTo - REACTION.scaleFrom);
+          const riseY = (1 - progress) * REACTION.riseFromPct;
+          const opacity =
+            REACTION.opacityFrom +
+            progress * (REACTION.opacityTo - REACTION.opacityFrom);
+
+          video.style.transform = `translateY(${riseY}%) scale(${scale})`;
+          video.style.opacity = `${opacity}`;
+        },
       });
-    }
-
-    let frameId: number;
-
-    function drawMotes() {
-      if (!ctx) return;
-      ctx.clearRect(0, 0, width, height);
-
-      motes.forEach((m) => {
-        ctx.beginPath();
-        ctx.fillStyle = `rgba(255, 196, 120, ${m.alpha})`;
-        ctx.arc(m.x, m.y, m.size, 0, Math.PI * 2);
-        ctx.fill();
-
-        m.y -= m.speed;
-
-        if (m.y < 0) {
-          m.y = height;
-          m.x = Math.random() * width;
-        }
-      });
-
-      frameId = requestAnimationFrame(drawMotes);
-    }
-
-    drawMotes();
-
-    const resize = () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
     };
 
-    window.addEventListener("resize", resize);
+    if (video.readyState >= 1 && video.duration) {
+      createScrollTrigger();
+    } else {
+      video.addEventListener("loadedmetadata", createScrollTrigger, {
+        once: true,
+      });
+    }
 
     return () => {
-      window.removeEventListener("resize", resize);
-      cancelAnimationFrame(frameId);
+      cancelled = true;
+      video.removeEventListener("loadedmetadata", createScrollTrigger);
+      scrollTrigger?.kill();
     };
   }, []);
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-between overflow-hidden font-inter">
-      <Navbar />
-
-      {/* Rising light motes */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full z-0"
-      />
-
-      {/* Hero Content */}
-      <motion.div
-        className="relative z-10 flex flex-col items-center text-center px-6 lg:px-12 max-w-4xl mt-32 sm:mt-36 space-y-6"
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <h1 className="text-3xl sm:text-4xl lg:text-6xl leading-tight text-white">
-          <span className="block">Learning,Creating</span>
-
-          <span className="block bg-gradient-to-r from-amber-500 via-orange-500 to-pink-500 bg-clip-text text-transparent font-bold">
+    <section
+      ref={heroRef}
+      className="relative w-full overflow-hidden bg-black min-h-[100svh]"
+    >
+      <div className="relative z-10 flex min-h-[50vh] flex-col items-center justify-center px-6 pt-6 text-center sm:min-h-[48vh] sm:pt-8 md:min-h-0 md:justify-start md:pt-[16vh]">
+        <h1 className=" leading-[1.12] tracking-tight text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
+          <span className="block">Learning, Creating</span>
+        <span className="block bg-[linear-gradient(90deg,#6a7cf0_0%,#c063e0_30%,#f0653f_65%,#fbbf24_100%)] bg-clip-text text-transparent">
             thriving together.
-          </span>
+</span>
         </h1>
 
-        <p className="text-base sm:text-lg text-neutral-200 max-w-3xl">
-          Community of learners and creators, united by curiosity and
-          collaboration. Ideas turn into action, skills transform into
-          innovation, and together we shape the future of technology and
-          beyond.
+        <p className="mx-auto mt-6 max-w-xl text-balance text-base leading-relaxed text-white/55 sm:mt-8 sm:text-lg">
+          A community of learners and creators, united by curiosity and
+          collaboration — where ideas turn into action, skills become
+          craft, and we build what comes next together.
         </p>
-
-        <a
+<a
           href="https://sabha.devvrats.in"
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-2 text-sm underline text-neutral-300 hover:text-white"
+          className="mt-8 inline-flex items-center text-sm font-medium text-white/70 underline decoration-transparent underline-offset-4 transition-colors duration-300 hover:text-white hover:decoration-white sm:mt-10"
         >
-          Read our Blogs
+          Read our blogs
         </a>
-      </motion.div>
+      </div>
 
-      {/* Orb + "Meet Anu." intro */}
-      <motion.div
-        className="relative z-10 mt-4 sm:mt-4 md:mt-10 lg:mt-4 mb-6 sm:mb-8 lg:mb-2 w-full flex flex-col lg:flex-row items-center justify-center gap-2 sm:gap-3 lg:gap-8 px-4 sm:px-6"
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1 }}
+      <div
+        className={`absolute inset-x-0 bottom-0 w-full ${MASK_HEIGHT_CLASSES} overflow-hidden pointer-events-none`}
       >
-        {/* Desktop: "Meet" sits before the orb */}
-        <span className="anu-label hidden lg:block text-4xl xl:text-5xl 2xl:text-6xl">
-          Meet
-        </span>
+        <video
+          ref={videoRef}
+          src="/0001-0250.MP4"
+          className="absolute inset-0 h-full w-full origin-bottom object-cover object-top will-change-transform"
+          muted
+          playsInline
+          preload="metadata"
+          aria-hidden="true"
+          tabIndex={-1}
+          controls={false}
+        />
 
-        <div className="relative w-full max-w-[50rem] h-[44vh] sm:h-[48vh] min-h-[320px] lg:h-[56vh]">
-          <Orb
-            hue={0}
-            hoverIntensity={0.3}
-            rotateOnHover
-            forceHoverState={false}
-          />
-        </div>
-
-        {/* Desktop: "Anu." sits after the orb */}
-        <span className="anu-label hidden lg:block text-4xl xl:text-5xl 2xl:text-6xl">
-          Anu.
-        </span>
-
-        {/* Mobile/tablet: single line pulled up against the orb, no dead space */}
-        <span className="anu-label mobile-anu-label lg:hidden -mt-6 sm:-mt-8 text-4xl sm:text-5xl">
-          Meet Anu.
-        </span>
-      </motion.div>
-
-      <style jsx global>{`
-        @import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&display=swap");
-      `}</style>
-
-      <style jsx>{`
-        .anu-label {
-          font-family: "Bricolage Grotesque", sans-serif;
-          font-weight: 700;
-          letter-spacing: -0.01em;
-          background-image: linear-gradient(
-            100deg,
-            #9c43fe 0%,
-            #4cc2e9 35%,
-            #1014b3 65%,
-            #9c43fe 100%
-          );
-          background-size: 300% 100%;
-          background-clip: text;
-          -webkit-background-clip: text;
-          color: transparent;
-          -webkit-text-fill-color: transparent;
-          animation: anu-flow 9s linear infinite;
-          transition: filter 0.4s ease, letter-spacing 0.4s ease;
-          cursor: default;
-        }
-
-        .anu-label:hover {
-          animation-duration: 2.5s;
-          filter: brightness(1.18) saturate(1.25);
-          letter-spacing: 0.01em;
-        }
-
-        .mobile-anu-label {
-          font-weight: 600;
-        }
-
-        @keyframes anu-flow {
-          0% {
-            background-position: 0% 50%;
-          }
-
-          100% {
-            background-position: 300% 50%;
-          }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .anu-label {
-            animation: none;
-          }
-        }
-      `}</style>
+        {/* Bottom vignette — fades the video to black toward the very
+            bottom of the viewport instead of ending on a hard clip line.
+            Pure decoration, sits above the video, never intercepts input. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black via-black/50 to-transparent"
+        />
+      </div>
     </section>
   );
 }
