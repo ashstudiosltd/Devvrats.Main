@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: "Devvrats | Developer Community",
   description:
     "Devvrats is a developer community where developers learn, build, collaborate, share knowledge, and grow together.",
-  metadataBase: new URL("https://devvrats.in"),
+ metadataBase: new URL("https://www.devvrats.in"),
   alternates: {
     canonical: "/",
   },
