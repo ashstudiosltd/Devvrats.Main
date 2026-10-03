@@ -20,7 +20,7 @@ const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Devvrats",
-  url: "https://devvrats.in",
+  url: "https://www.devvrats.in",
   description:
     "Devvrats is a developer community where developers learn, build, collaborate, share knowledge, and grow together.",
 };
