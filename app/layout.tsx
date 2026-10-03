@@ -7,8 +7,22 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "Devvrats.",
-  description: "Devvrats is indian's own developer community,bringing developers together to learn,build,collaborate, and grow."
+  title: "Devvrats | Developer Community",
+  description:
+    "Devvrats is a developer community where developers learn, build, collaborate, share knowledge, and grow together.",
+  metadataBase: new URL("https://devvrats.in"),
+  alternates: {
+    canonical: "/",
+  },
+};
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Devvrats",
+  url: "https://devvrats.in",
+  description:
+    "Devvrats is a developer community where developers learn, build, collaborate, share knowledge, and grow together.",
 };
 
 export default function RootLayout({
@@ -19,9 +33,16 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${roboto.className} relative text-white`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationSchema),
+          }}
+        />
+
         {/* Gradient background only */}
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black via-gray-900 to-purple-950 opacity-90" />
-        
+
         {/* Page content */}
         <main className="relative z-10 min-h-screen">
           {children}

@@ -130,28 +130,32 @@ export default function DevvratsHero() {
       ref={heroRef}
       className="relative w-full overflow-hidden bg-black min-h-[100svh]"
     >
-      <div className="relative z-10 flex min-h-[50vh] flex-col items-center justify-center px-6 pt-6 text-center sm:min-h-[48vh] sm:pt-8 md:min-h-0 md:justify-start md:pt-[16vh]">
-        <h1 className=" leading-[1.12] tracking-tight text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
-          <span className="block">Learning, Creating</span>
-        <span className="block bg-[linear-gradient(90deg,#6a7cf0_0%,#c063e0_30%,#f0653f_65%,#fbbf24_100%)] bg-clip-text text-transparent">
-            thriving together.
-</span>
-        </h1>
+     <div className="relative z-10 flex min-h-[50vh] flex-col items-center justify-center px-6 pt-6 text-center sm:min-h-[48vh] sm:pt-8 md:min-h-0 md:justify-start md:pt-[16vh]">
+  <p className="mb-5 text-xs font-medium uppercase tracking-[0.24em] text-white/45 sm:text-sm">
+    Devvrats · Developer Community
+  </p>
 
-        <p className="mx-auto mt-6 max-w-xl text-balance text-base leading-relaxed text-white/55 sm:mt-8 sm:text-lg">
-          A community of learners and creators, united by curiosity and
-          collaboration — where ideas turn into action, skills become
-          craft, and we build what comes next together.
-        </p>
-<a
-          href="https://sabha.devvrats.in"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-8 inline-flex items-center text-sm font-medium text-white/70 underline decoration-transparent underline-offset-4 transition-colors duration-300 hover:text-white hover:decoration-white sm:mt-10"
-        >
-          Read our blogs
-        </a>
-      </div>
+  <h1 className="leading-[1.12] tracking-tight text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
+    <span className="block">Learning, Creating</span>
+    <span className="block bg-[linear-gradient(90deg,#6a7cf0_0%,#c063e0_30%,#f0653f_65%,#fbbf24_100%)] bg-clip-text text-transparent">
+      thriving together.
+    </span>
+  </h1>
+
+  <p className="mx-auto mt-6 max-w-xl text-balance text-base leading-relaxed text-white/55 sm:mt-8 sm:text-lg">
+    Devvrats is a developer community where developers learn, build,
+    collaborate, share knowledge, and grow together.
+  </p>
+
+  <a
+    href="https://sabha.devvrats.in"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="mt-8 inline-flex items-center text-sm font-medium text-white/70 underline decoration-transparent underline-offset-4 transition-colors duration-300 hover:text-white hover:decoration-white sm:mt-10"
+  >
+    Explore Sabha
+  </a>
+</div>
 
       <div
         className={`absolute inset-x-0 bottom-0 w-full ${MASK_HEIGHT_CLASSES} overflow-hidden pointer-events-none`}
