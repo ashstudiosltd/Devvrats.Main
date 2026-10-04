@@ -107,9 +107,11 @@ function ServiceCard({ s, inset }: { s: Service; inset?: boolean }) {
         <p className="mt-5 pr-12 text-lg font-medium leading-tight md:text-xl">{s.text}</p>
         <span
           aria-hidden
-          className="absolute bottom-4 right-4 grid h-10 w-10 place-items-center rounded-xl bg-[#f0f0f0] text-lg"
+          className="absolute bottom-4 right-4 grid h-10 w-10 place-items-center rounded-xl bg-[#f0f0f0] text-[#0a0a0a] lg:h-12 lg:w-12"
         >
-          ↗
+          <span className="block h-4 w-4 lg:h-5 lg:w-5">
+            <ArrowIcon />
+          </span>
         </span>
       </motion.article>
     </div>
