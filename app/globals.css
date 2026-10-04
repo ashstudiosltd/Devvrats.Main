@@ -71,3 +71,8 @@ html.lenis body {
   .animate-code-fade { animation: none !important; opacity: 0.08 !important; }
   .animate-arrow-idle { animation: none; }
 }
+html,
+body {
+  max-width: 100%;
+  overflow-x: clip;
+}
