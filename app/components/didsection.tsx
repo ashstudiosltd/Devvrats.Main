@@ -209,7 +209,7 @@ function LeetCodeCard() {
 function HuggingFaceCard() {
   return (
     <div className="nc">
-      <div className="ch"><span className="pb hf">🤗</span><b>Hugging Face</b></div>
+      <div className="ch"><span className="pb hf">HF</span><b>Hugging Face</b></div>
       <div className="hf-counts">
         <div><b>8</b><span>Models</span></div>
         <div><b>3</b><span>Datasets</span></div>
@@ -271,12 +271,12 @@ const NODES: NodeDef[] = [
     <div className="nc hubc">
       <div className="top">
         <div className="av"><Logo /></div>
-        <div className="who"><b>Devvrats ID</b><small>Developer identity</small></div>
+        <div className="who"><b>Ashutosh Kahlon</b><small>ashutoshkahlon</small></div>
       </div>
-      <div className="layers"><i>Connect</i><i>Verify</i><i>Showcase</i></div>
+      <div className="layers"><i>Full-stack</i><i>Open source</i><i>Highly active</i></div>
       <div className="stats">
         <div><strong>12</strong><span>Projects</span></div>
-        <div><strong>1.3k</strong><span>Contributions</span></div>
+        <div><strong>1.3k</strong><span>Github Contributions</span></div>
         <div><strong>6</strong><span>Credentials</span></div>
       </div>
       <em className="ok">✓ Verified profile</em>
@@ -510,8 +510,7 @@ function Profile() {
       <div className="pfi">
         <aside className="side">
           <div className="avatar"><Logo /></div>
-          <div className="ident"><div className="nm">Your Name</div><div className="hd">@yourname</div></div>
-          <button type="button" className="follow" tabIndex={-1}><Ic n="check" />Follow on Devvrats</button>
+          <div className="ident"><div className="nm">Ashutosh Kahlon</div><div className="hd">ashutoshkahlon</div></div>
           <div className="tagrow"><i>Full-stack</i><i>Open source</i><i>Verified</i><i>Highly active</i></div>
           <ul className="meta">
             <li><Ic n="building" />Devvrats</li>
@@ -524,19 +523,18 @@ function Profile() {
 
         <div className="main">
           <div className="welcome">
-            <div><div className="wt">Welcome to Your Hub</div><div className="ws">Explore verified work, contributions and projects</div></div>
-            <div className="pw">Powered by <b>Devvrats ID</b></div>
+            <div><div className="wt">Welcome to Devvrats. Hub</div></div>
           </div>
 
           <div className="kpis">
             <div><Ic n="folder" /><strong>12</strong><span>Projects</span></div>
-            <div><Ic n="code" /><strong>1.3k</strong><span>Contributions</span></div>
+            <div><Ic n="code" /><strong>1.3k</strong><span>Github Contributions</span></div>
             <div><Ic n="check" /><strong>6</strong><span>Credentials</span></div>
             <div><Ic n="clock" /><strong>3</strong><span>Years active</span></div>
           </div>
 
           <section className="blk">
-            <div className="bh"><Ic n="bars" /><b>Contributions</b><span><strong>1.3k</strong> in the last year</span></div>
+            <div className="bh"><Ic n="bars" /><b>Github Contributions</b><span><strong>1.3k</strong> in the last year</span></div>
             <div className="panel">
               <div className="months">{MONTHS.map(m => <span key={m}>{m}</span>)}</div>
               <Heat weeks={52} seed={11} className="big-hm" />
@@ -603,7 +601,7 @@ function Blueprint() {
         <div className="scr">
           <div className="bar">
             <i /><i /><i />
-            <span className="url">did.devvrats.in/you</span>
+            <span className="url">did.devvrats.in/ashutoshkahlon</span>
           </div>
           <Profile />
         </div>

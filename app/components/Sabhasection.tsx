@@ -164,9 +164,7 @@ export default function SabhaSection() {
         {/* intro + button */}
         <div className="flex flex-col items-start gap-6 sm:pl-[5%]">
           <p className="max-w-[21rem] text-lg leading-snug text-[#5d5d5d]">
-            We design products that live in the digital world: intuitive UX, sharp UI,
-            immersive 3D and motion. From research to launch, we craft bold, seamless
-            experiences.
+             A space where the Devvrats community comes together to share ideas, start conversations, build projects, and learn from one another. Sabha brings people and knowledge into one place, turning everyday interactions into something worth building on.
           </p>
 
           <motion.a
