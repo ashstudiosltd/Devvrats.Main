@@ -731,7 +731,12 @@ function PataPanel() {
             </div>
 
             <motion.div ref={bodyRef} initial={false} animate={bodyAnim} transition={spring} className="grid min-h-0 flex-1 overflow-hidden">
-              <div ref={controlsRef} className="min-w-0 max-h-full self-start overflow-y-auto md:overflow-visible">
+              {/* data-lenis-prevent: lets this area scroll with the wheel (phones) */}
+              <div
+                ref={controlsRef}
+                data-lenis-prevent
+                className="min-w-0 max-h-full self-start overflow-y-auto md:overflow-visible"
+              >
                 {controls}
               </div>
 
@@ -747,7 +752,7 @@ function PataPanel() {
                     <span>solution.{EXT[lang]}</span>
                     <span className="ml-auto truncate">{ch.name}</span>
                   </div>
-                  <div className="min-h-0 flex-1 overflow-auto p-4 leading-6 text-white/80">
+                  <div data-lenis-prevent className="min-h-0 flex-1 overflow-auto p-4 leading-6 text-white/80">
                     {starter(lang, ch.fn)
                       .split("\n")
                       .map((ln, i) => (
@@ -948,7 +953,7 @@ function AnuPanel() {
                 <span>{running ? "…" : failed > 0 ? 1 : 0}</span>
               </div>
 
-              <div className="min-h-0 flex-1 overflow-y-auto border-t border-white/10 pt-3">
+              <div data-lenis-prevent className="min-h-0 flex-1 overflow-y-auto border-t border-white/10 pt-3">
                 <div className="mb-2 text-red-400">Test Results:</div>
                 <ul className="space-y-0.5 font-mono text-[11.5px] md:text-[12px]">
                   {TESTS.map((t, i) => {
@@ -1035,7 +1040,7 @@ function AnuPanel() {
               transition={{ duration: 0.26, ease: GENTLE }}
               className="flex h-full flex-col"
             >
-              <div ref={listRef} className="min-h-0 flex-1 space-y-2.5 overflow-y-auto pr-1">
+              <div ref={listRef} data-lenis-prevent className="min-h-0 flex-1 space-y-2.5 overflow-y-auto pr-1">
                 {msgs.map((m) => (
                   <div key={m.id} className={m.role === "user" ? "flex justify-end" : "flex justify-start"}>
                     <div
@@ -1261,6 +1266,7 @@ function ProjectCard({ p }: { p: Project }) {
 
   return (
     <article
+      data-slow
       onMouseEnter={enter}
       onMouseMove={track}
       onMouseLeave={leave}

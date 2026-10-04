@@ -206,6 +206,7 @@ export default function SabhaSection() {
         {/* ---------- services ---------- */}
         <div
           id="services"
+          data-slow
           className="grid grid-cols-1 gap-4 md:grid-cols-2 md:items-start md:gap-5"
         >
           <div className="contents md:flex md:flex-col md:gap-5 md:pt-12">

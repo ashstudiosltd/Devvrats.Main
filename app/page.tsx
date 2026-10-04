@@ -9,21 +9,21 @@ import ScrollImageSection from './components/Scrollimagesection';
 import BottomProgressiveBlur from '@/components/BottomProgressiveBlur';
 import SabhaSection from './components/Sabhasection';
 import DID from './components/didsection';
+import SmoothScroll from '@/components/SmoothScroll';
+
 const page = () => {
   return (
-    <>
-      <Navbar/>
-      <Hero/>
-      <AboutDevvrats/>
-      <ScrollImageSection/>
-      <Fundamentals/>
-      <DID/>
-      <SabhaSection/>
-      <BottomProgressiveBlur/>
-      <Footer/>
-      
-      
-    </>
+<SmoothScroll>
+  <Navbar/>
+  <Hero/>
+  <div data-slow><AboutDevvrats/></div>
+  <ScrollImageSection/>
+  <Fundamentals/>
+  <DID/>
+  <div data-slow><SabhaSection/></div>
+  <BottomProgressiveBlur/>
+  <Footer/>
+</SmoothScroll>
   )
 }
 
