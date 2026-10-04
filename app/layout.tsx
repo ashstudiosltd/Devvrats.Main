@@ -4,15 +4,61 @@ import "./globals.css";
 
 const roboto = Roboto({
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Devvrats | Developer Community",
+  metadataBase: new URL("https://www.devvrats.in"),
+
+  title: {
+    default: "Devvrats | Developer Community",
+    template: "%s | Devvrats",
+  },
+
   description:
     "Devvrats is a developer community where developers learn, build, collaborate, share knowledge, and grow together.",
-  metadataBase: new URL("https://www.devvrats.in"),
+
+  applicationName: "Devvrats",
+
+  authors: [
+    {
+      name: "Devvrats",
+      url: "https://www.devvrats.in",
+    },
+  ],
+
+  creator: "Devvrats",
+  publisher: "Devvrats",
+
   alternates: {
     canonical: "/",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://www.devvrats.in",
+    siteName: "Devvrats",
+    title: "Devvrats | Developer Community",
+    description:
+      "Devvrats is a developer community where developers learn, build, collaborate, share knowledge, and grow together.",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Devvrats | Developer Community",
+    description:
+      "Devvrats is a developer community where developers learn, build, collaborate, share knowledge, and grow together.",
   },
 };
 
@@ -27,9 +73,9 @@ const organizationSchema = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="en" className="dark">
       <body className={`${roboto.className} relative text-white`}>
@@ -40,10 +86,8 @@ export default function RootLayout({
           }}
         />
 
-        {/* Gradient background only */}
         <div className="absolute inset-0 -z-10 bg-black" />
 
-        {/* Page content */}
         <main className="relative z-10 min-h-screen">
           {children}
         </main>

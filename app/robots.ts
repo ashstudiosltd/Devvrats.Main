@@ -5,7 +5,16 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
+      disallow: [
+        "/api/",
+        "/auth/",
+        "/login/",
+        "/register/",
+        "/dashboard/",
+        "/settings/",
+      ],
     },
+
     sitemap: "https://www.devvrats.in/sitemap.xml",
   };
 }

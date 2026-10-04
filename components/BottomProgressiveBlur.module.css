@@ -1,104 +1,184 @@
 /*
+ * Bottom Progressive Blur
+ *
  * Fixed strip along the bottom of the viewport.
  *
- * It must NOT have opacity < 1, filter, mask, clip-path or mix-blend-mode:
- * any of those make it a "backdrop root" and the blur layers would only see
- * this element's own (empty) content instead of the page. That's why hiding
- * is done with transform, never opacity. Also keep it out of any ancestor
- * with transform/filter, or `fixed` stops meaning "the viewport".
+ * Important:
+ * The root itself must NOT use opacity, filter, mask,
+ * clip-path, or mix-blend-mode.
  *
- * Tweakable from a parent or className:
- *   --bpb-height  strip height   (default clamp(64px, 10vh, 96px))
- *   --bpb-scale   blur multiplier (default 1, 0.8 on small screens)
- *   --bpb-z       z-index        (default 40)
+ * Those properties can create a backdrop root and prevent
+ * the backdrop-filter layers from seeing the page correctly.
+ *
+ * Visibility/animation is therefore handled with transform.
+ *
+ * Custom properties:
+ *   --bpb-height  strip height
+ *   --bpb-scale   blur multiplier
+ *   --bpb-z       z-index
  */
+
 .root {
   --bpb-scale: 1;
 
   position: fixed;
-  left: 0;
-  right: 0;
+  inset-inline: 0;
   bottom: 0;
+
   z-index: var(--bpb-z, 40);
+
+  width: 100%;
+  height: calc(
+    var(--bpb-height, clamp(64px, 10vh, 96px)) +
+      env(safe-area-inset-bottom, 0px)
+  );
+
   pointer-events: none;
 
-  height: calc(var(--bpb-height, clamp(64px, 10vh, 96px)) + env(safe-area-inset-bottom, 0px));
-
-  /* --hide  (0..1): slides the strip off-screen near the end of the page.
-     --boost (0..1): stretches it slightly while scrolling fast.
-     Both are compositor-only: no layout, no repaint of the blur radius. */
   transform-origin: 50% 100%;
-  transform: translateY(calc(var(--hide, 0) * 100%)) scaleY(calc(1 + var(--boost, 0) * 0.08));
+  transform:
+    translateY(calc(var(--hide, 0) * 100%))
+    scaleY(calc(1 + var(--boost, 0) * 0.08));
+
+  /*
+   * The animation only changes transform.
+   * The blur layers themselves remain compositor-friendly.
+   */
   will-change: transform;
+
+  /*
+   * Keep the visual effect isolated from surrounding layout.
+   */
+  contain: layout paint;
 }
 
-/* fully hidden: stop compositing the backdrop filters entirely */
+/*
+ * Fully hidden:
+ * stop compositing the backdrop filters entirely.
+ */
 .root[data-off] {
   visibility: hidden;
 }
 
+/*
+ * Individual progressive blur layer.
+ *
+ * Each layer sees the page behind it and contributes
+ * a different blur radius through the mask.
+ */
 .layer {
   position: absolute;
   inset: 0;
-  -webkit-backdrop-filter: blur(calc(var(--blur) * var(--bpb-scale)));
-  backdrop-filter: blur(calc(var(--blur) * var(--bpb-scale)));
+
+  -webkit-backdrop-filter:
+    blur(calc(var(--blur) * var(--bpb-scale)));
+
+  backdrop-filter:
+    blur(calc(var(--blur) * var(--bpb-scale)));
+
   -webkit-mask-image: var(--mask);
   mask-image: var(--mask);
 }
 
-/* the deepest layers add a hint of saturation so it reads as glass, not smudge */
+/*
+ * The deepest layers receive a tiny saturation boost
+ * so the result feels like glass rather than a smear.
+ */
 .layer[data-sat] {
-  -webkit-backdrop-filter: blur(calc(var(--blur) * var(--bpb-scale))) saturate(1.04);
-  backdrop-filter: blur(calc(var(--blur) * var(--bpb-scale))) saturate(1.04);
+  -webkit-backdrop-filter:
+    blur(calc(var(--blur) * var(--bpb-scale)))
+    saturate(1.04);
+
+  backdrop-filter:
+    blur(calc(var(--blur) * var(--bpb-scale)))
+    saturate(1.04);
 }
 
-/* colour wash in the page background colour: content melts into the edge */
+/*
+ * Optional colour wash.
+ *
+ * The wash follows the same progressive mask as the blur.
+ */
 .tint {
   position: absolute;
   inset: 0;
+
   background-color: var(--bpb-tint, transparent);
-  opacity: min(1, calc(var(--tint-opacity, 0.28) + var(--boost, 0) * 0.1));
+
+  opacity: min(
+    1,
+    calc(
+      var(--tint-opacity, 0.28) +
+      var(--boost, 0) * 0.1
+    )
+  );
+
   -webkit-mask-image: var(--mask);
   mask-image: var(--mask);
-  transition: background-color 0.35s ease; /* smooth light/dark switch */
 }
 
-/* smaller screens: lighter blur, same proportions */
+/*
+ * Smaller screens:
+ * reduce blur intensity to lower GPU cost.
+ */
 @media (max-width: 640px) {
   .root {
     --bpb-scale: 0.8;
   }
 }
 
-/* landscape phones: don't eat a quarter of the screen */
+/*
+ * Landscape phones:
+ * keep the blur strip from consuming too much
+ * of the already-limited vertical viewport.
+ */
 @media (max-height: 480px) {
   .root {
     --bpb-height: 52px;
   }
 }
 
-/* no backdrop-filter support, or the user asked for less transparency:
-   drop the blur and let a slightly stronger wash carry the fade */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+/*
+ * Browsers without backdrop-filter support:
+ * fall back to the colour wash.
+ */
+@supports not (
+  (backdrop-filter: blur(1px)) or
+  (-webkit-backdrop-filter: blur(1px))
+) {
   .layer {
     display: none;
   }
-  .tint {
-    opacity: 0.75;
-  }
-}
-@media (prefers-reduced-transparency: reduce) {
-  .layer {
-    display: none;
-  }
+
   .tint {
     opacity: 0.75;
   }
 }
 
+/*
+ * Users who prefer reduced transparency:
+ * remove the expensive blur entirely.
+ */
+@media (prefers-reduced-transparency: reduce) {
+  .layer {
+    display: none;
+  }
+
+  .tint {
+    opacity: 0.75;
+  }
+}
+
+/*
+ * Users who prefer reduced motion:
+ * remove compositor promotion and keep the strip static.
+ */
 @media (prefers-reduced-motion: reduce) {
   .root {
-    transform: translateY(calc(var(--hide, 0) * 100%));
+    transform: translateY(
+      calc(var(--hide, 0) * 100%)
+    );
+
     will-change: auto;
   }
 }
