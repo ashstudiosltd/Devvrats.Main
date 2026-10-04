@@ -19,7 +19,7 @@ const easeInOutCubic = (t: number) =>
   t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
 /* ---------- CTA hover ---------- */
-const CTA_LABEL = "See how we work";
+const CTA_LABEL = "Join Sabha";
 const hoverEase = [0.22, 1, 0.36, 1] as const;
 
 const ctaRoot: Variants = {
