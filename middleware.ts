@@ -1,6 +1,10 @@
+import { supabaseConfigured } from "@/lib/supabase/config";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 export async function middleware(request: NextRequest) {
+  // The public Anu demo does not require a Supabase session.
+  if (request.nextUrl.pathname === "/api/anu/chat") return NextResponse.next();
+  if (!supabaseConfigured()) return NextResponse.next();
   let response = NextResponse.next({
     request,
   });

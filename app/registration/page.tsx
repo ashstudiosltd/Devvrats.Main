@@ -1,30 +1,33 @@
 "use client";
 import Image from "next/image";
+import { supabaseConfigured } from "@/lib/supabase/config";
+import { useEffect, useState } from "react";
+import { authReturn } from "@/lib/auth-return";
 import { createClient } from "@/lib/supabase/client";
 export default function LoginPage() {
-  const supabase = createClient();
-  const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
+  if (!supabaseConfigured()) return <main className="flex min-h-screen items-center justify-center bg-neutral-950 p-8 text-white"><div className="max-w-md"><h1 className="mb-4 text-2xl">Devvrats sign-in needs configuration</h1><p>Set the Supabase project root URL and publishable key in Main’s local environment, then restart Main and Anu. Keep secret keys out of public environment variables.</p></div></main>;
+  return <ConfiguredLoginPage />;
+}
+function ConfiguredLoginPage() {
+  const [supabase] = useState(() => createClient());
+  const [errorMessage, setErrorMessage] = useState("");
+  useEffect(() => {
+    let active = true;
+    const next = new URLSearchParams(window.location.search).get("next");
+    if (new URLSearchParams(window.location.search).has("error")) setErrorMessage("Sign-in could not be completed. Please try again.");
+    void supabase.auth.getUser().then(({data}) => {
+      if (active && data.user) window.location.replace(authReturn(next, window.location.origin));
     });
-    if (error) {
-      console.error("Google login error:", error);
-    }
-  };
-  const signInWithGitHub = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "github",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-    if (error) {
-      console.error("GitHub login error:", error);
-    }
-  };
+    return () => { active = false; };
+  }, [supabase]);
+  function startSignIn(provider: "google" | "github") {
+    const destination = new URL("/auth/start", window.location.origin);
+    destination.searchParams.set("provider", provider);
+    destination.searchParams.set("next", authReturn(new URLSearchParams(window.location.search).get("next"), window.location.origin));
+    window.location.assign(destination.href);
+  }
+  const signInWithGoogle = () => startSignIn("google");
+  const signInWithGitHub = () => startSignIn("github");
   return (
     <div className="relative h-screen w-screen overflow-hidden">
       {/* Background */}
@@ -75,6 +78,7 @@ export default function LoginPage() {
             </p>
             {/* Login */}
             <div className="space-y-3">
+              {errorMessage && <p role="alert" className="text-sm text-red-200">{errorMessage}</p>}
               {/* Google */}
               <button
                 onClick={signInWithGoogle}

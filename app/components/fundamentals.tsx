@@ -159,6 +159,7 @@ const replyWord: Variants = {
 };
 
 function RevealWords({ text }: { text: string }) {
+  const reducedMotion = useReducedMotion();
   const words = text.split(" ");
   const [done, setDone] = useState(false);
 
@@ -167,7 +168,7 @@ function RevealWords({ text }: { text: string }) {
     return () => clearTimeout(t);
   }, [words.length]);
 
-  if (done) return <>{text}</>;
+  if (done || reducedMotion) return <>{text}</>;
 
   return (
     <motion.span
@@ -810,23 +811,10 @@ const FINAL: TestStatus[] = TESTS.map((t) => (t.pass ? "pass" : "fail"));
 
 type Msg = { id: number; role: "user" | "anu"; text: string; fresh?: boolean };
 const PROMPTS = ["What is Pata?", "How do ranks work?", "What is Sabha?", "Review my approach"];
-
-function answer(q: string): string {
-  const s = q.toLowerCase();
-  if (/pata|kata|challenge|practice/.test(s))
-    return "Pata are small coding exercises crafted by the community. Pick a language and a topic, hit TRAIN, and solve one at a time — each one sharpens a single technique.";
-  if (/rank|honor|kyu|level/.test(s))
-    return "Every Pata carries a kyu rank. Solve higher-ranked ones to earn honor, and your profile climbs from Novice all the way to Grandmaster.";
-  if (/sabha|community|event/.test(s))
-    return "Sabha is the space within Devvrats where ideas come alive — developers, designers and thinkers gathering to build meaningful things together.";
-  if (/review|approach|solution|stuck|help|bug|fail/.test(s))
-    return "Walk me through your approach. A good start: write the smallest failing test, make it pass, then refactor — I can hint at each step without spoiling it.";
-  if (/\b(hi|hello|hey)\b|who are you|\banu\b/.test(s))
-    return "I'm Anu, your assistant at Devvrats. I can explain Pata, ranks and Sabha, or help you debug a failing test.";
-  return "I'm still learning that one. Try asking about Pata, ranks, Sabha, or a failing test.";
-}
+const ANU_CHAT_URL = process.env.NEXT_PUBLIC_ANU_URL || (process.env.NODE_ENV === "production" ? "https://anu.devvrats.in/" : "http://localhost:5173/");
 
 function AnuPanel() {
+  const reducedMotion = useReducedMotion();
   const canHover = useCanHover();
   const [tab, setTab] = useState<"tests" | "chat">("tests");
   const [status, setStatus] = useState<TestStatus[]>(FINAL);
@@ -838,17 +826,22 @@ function AnuPanel() {
     { id: 0, role: "anu", text: "Hi, I'm Anu. Ask me about Devvrats, Pata or your next rank." },
   ]);
   const [typing, setTyping] = useState(false);
+  const [chatError, setChatError] = useState("");
+  const requestRef = useRef<AbortController | null>(null);
+  const sending = useRef(false);
+  const turnCount = msgs.filter((m) => m.role === "user").length;
+  const demoFull = turnCount >= 8;
   const [input, setInput] = useState("");
   const idRef = useRef(1);
   const listRef = useRef<HTMLDivElement>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  useEffect(() => () => timers.current.forEach(clearTimeout), []);
+  useEffect(() => () => { timers.current.forEach(clearTimeout); requestRef.current?.abort(); requestRef.current = null; }, []);
 
   useEffect(() => {
     const el = listRef.current;
-    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
-  }, [msgs, typing, tab]);
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: reducedMotion ? "auto" : "smooth" });
+  }, [msgs, typing, tab, reducedMotion]);
 
   const run = () => {
     if (running) return;
@@ -867,23 +860,40 @@ function AnuPanel() {
     });
   };
 
-  const send = (text: string, forced?: string) => {
+  const send = async (text: string) => {
     const q = text.trim();
-    if (!q || typing) return;
-    setMsgs((m) => [...m, { id: idRef.current++, role: "user", text: q }]);
-    setInput("");
-    setTyping(true);
-    timers.current.push(
-      setTimeout(() => {
-        setMsgs((m) => [...m, { id: idRef.current++, role: "anu", text: forced ?? answer(q), fresh: true }]);
-        setTyping(false);
-      }, 750),
-    );
+    if (!q || sending.current || demoFull) return;
+    if (q.length > 1000) { setChatError("Please keep your message under 1,000 characters."); return; }
+    const history = msgs.filter((m) => m.id !== 0).map((m) => ({ role: m.role === "anu" ? "assistant" : "user", text: m.text }));
+    const userId = idRef.current++;
+    sending.current = true;
+    setMsgs((m) => [...m, { id: userId, role: "user", text: q }]);
+    setInput(""); setChatError(""); setTyping(true);
+    const controller = new AbortController();
+    requestRef.current = controller;
+    const timeout = setTimeout(() => controller.abort(), 55_000);
+    try {
+      const response = await fetch("/api/anu/chat", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: q, history }), signal: controller.signal,
+      });
+      const data = await response.json();
+      if (!response.ok || typeof data.reply !== "string") throw new Error(data.error || "Anu couldn't reply. Please try again.");
+      setMsgs((m) => [...m, { id: idRef.current++, role: "anu", text: data.reply, fresh: true }]);
+    } catch (error) {
+      if (requestRef.current !== controller) return;
+      setMsgs((m) => m.filter((message) => message.id !== userId));
+      setInput(q);
+      setChatError(controller.signal.aborted ? "Anu is taking longer than expected. Please try again." : error instanceof Error ? error.message : "Anu couldn't connect. Please try again.");
+    } finally {
+      clearTimeout(timeout);
+      if (requestRef.current === controller) { requestRef.current = null; sending.current = false; setTyping(false); }
+    }
   };
 
   const askAbout = (t: TestDef) => {
     setTab("chat");
-    send(`Why is "${t.name}" failing?`, `${t.hint} The failure says: expected ${t.detail}.`);
+    void send(`Explain this example test failure: "${t.name}". Expected output: ${t.detail}. Suggested hint: ${t.hint}. Explain the approach; the implementation is not provided.`);
   };
 
   const passed = status.filter((s) => s === "pass").length;
@@ -916,6 +926,20 @@ function AnuPanel() {
           ))}
         </div>
 
+        {tab === "chat" && (
+          <motion.a
+            href={ANU_CHAT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="New chat with Anu (opens in a new tab)"
+            whileHover={canHover ? { backgroundColor: "rgba(255,255,255,0.14)" } : undefined}
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.18 }}
+            className="shrink-0 rounded-lg bg-white/[0.08] px-3 py-1.5 text-[11px] font-medium text-white outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+          >
+            New chat
+          </motion.a>
+        )}
         {tab === "tests" && (
           <motion.button
             type="button"
@@ -1044,7 +1068,7 @@ function AnuPanel() {
                 {msgs.map((m) => (
                   <div key={m.id} className={m.role === "user" ? "flex justify-end" : "flex justify-start"}>
                     <div
-                      className={`max-w-[88%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-[1.35] ${
+                      className={`max-w-[88%] whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2.5 text-[13px] leading-[1.35] ${
                         m.role === "user" ? "bg-white/[0.12] text-white" : "bg-[#a78bfa]/10 text-[#ddd6fe]"
                       }`}
                     >
@@ -1073,17 +1097,19 @@ function AnuPanel() {
                   <motion.button
                     key={p}
                     type="button"
-                    onClick={() => send(p)}
+                    onClick={() => void send(p)}
+                    disabled={typing || demoFull}
                     whileHover={canHover ? { backgroundColor: "rgba(255,255,255,0.12)" } : undefined}
                     whileTap={{ scale: 0.96 }}
                     transition={{ duration: 0.18 }}
-                    className="rounded-full bg-white/[0.06] px-3 py-1.5 text-[11.5px] text-white/70 outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                    className="rounded-full disabled:cursor-not-allowed disabled:opacity-40 bg-white/[0.06] px-3 py-1.5 text-[11.5px] text-white/70 outline-none focus-visible:ring-2 focus-visible:ring-white/40"
                   >
                     {p}
                   </motion.button>
                 ))}
               </div>
 
+              {chatError && <p role="alert" className="mt-2 text-[11px] text-red-300">{chatError}</p>}
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -1094,9 +1120,11 @@ function AnuPanel() {
                 <input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask Anu anything…"
+                  placeholder={demoFull ? "Start a new chat to continue" : "Ask Anu anything…"}
+                  maxLength={1000}
+                  disabled={typing || demoFull}
                   aria-label="Ask Anu"
-                  className="min-w-0 flex-1 cursor-text bg-transparent text-[13px] text-white outline-none placeholder:text-white/30"
+                  className="min-w-0 flex-1 cursor-text bg-transparent text-[16px] md:text-[13px] text-white outline-none placeholder:text-white/30"
                 />
                 <motion.button
                   type="submit"
@@ -1104,7 +1132,8 @@ function AnuPanel() {
                   whileTap={{ scale: 0.95 }}
                   transition={{ duration: 0.18 }}
                   aria-label="Send"
-                  className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-black outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                  disabled={typing || demoFull || !input.trim()}
+                  className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-black disabled:opacity-40 outline-none focus-visible:ring-2 focus-visible:ring-white/60"
                 >
                   <Icon.ArrowUp />
                 </motion.button>
@@ -1179,7 +1208,7 @@ const PROJECTS: Project[] = [
     title: "Anu",
     desc: "Meet Anu - your personal assistant and the backbone of Devvrats. From guiding you through coding challenges to connecting with the community, Anu empowers every member.",
     cta: "Talk to Anu",
-    href: "#",
+    href: ANU_CHAT_URL,
     tags: ["AI assistant", "Core member",],
     cursor: "Meet Anu",
     cursorTone: CURSOR_TONE,
@@ -1270,6 +1299,9 @@ function ProjectCard({ p }: { p: Project }) {
       onMouseEnter={enter}
       onMouseMove={track}
       onMouseLeave={leave}
+      onClick={(event) => {
+        if (p.title === "Anu" && !(event.target as Element).closest("a,button,input,textarea,select,[data-zone]")) window.location.assign(p.href);
+      }}
       className={`relative isolate flex cursor-pointer min-h-[560px] w-full flex-col overflow-hidden rounded-[28px] p-5 md:p-7 ${
         p.wide ? "md:col-span-2 md:min-h-[640px]" : "md:min-h-[690px]"
       } ${p.bg}`}

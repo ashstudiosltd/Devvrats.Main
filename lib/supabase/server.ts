@@ -1,7 +1,9 @@
+import { supabaseConfigured } from "./config";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 export async function createClient() {
+  if (!supabaseConfigured()) throw new Error("Configure the Supabase project root URL and publishable key. Secret keys must never be used in browser configuration.");
   const cookieStore = await cookies();
 
   const isProduction = process.env.NODE_ENV === "production";
